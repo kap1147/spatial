@@ -5,7 +5,10 @@ from django.contrib.gis.db.models.functions import Distance
 from .models import Post
 from django.contrib.gis.geos import Point
 from website.utils import get_user_ip
-from rest_framework import viewsets
+from rest_framework import generics
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .serializers import PostSerializer
 
 class PostListView(ListView):
@@ -21,18 +24,21 @@ class PostListView(ListView):
         print(str(context['posts']))
         return context
 
-class PostListViewSet(viewsets.ViewSet):
+@api_view(['GET'])
+def PostListAPI(request):
     """
-    API endpoint that allows post to be viewed or edited.
+    API endpoint that list post to be viewed.
     """
-    queryset = Post.objects.all()
-    serializer_class
-    def list(self, request):
-        # get user's location
-        user_location = get_user_ip(self.request)
-        user_point = Point(user_location['lon'], user_location['lat'], srid=4326)
-        # query post by distance of user
-        queryset = Post.objects.annotate(distance=Distance('location', user_point)).order_by('distance')
-        print(str(queryset))
-        serializer = PostSerializer(queryset, many=True)
+    if request.method == 'GET':
+        post = Post.objects.all()
+        serializer = PostSerializer(post, many=True)
         return Response(serializer.data)
+
+    def get_queryset(request):
+        """
+        query post by distance
+        """
+        # get user's location
+        user_location = get_user_ip(request)
+        user_point = Point(user_location['lon'], user_location['lat'], srid=4326)
+        return Post.objects.annotate(distance=Distance('location', user_point)).order_by('distance')

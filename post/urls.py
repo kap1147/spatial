@@ -3,6 +3,7 @@ from . import views
 #from .models import Post
 #from rest_framework import routers, serializers, viewsets
 from rest_framework import routers
+from rest_framework.urlpatterns import format_suffix_patterns
 
 """
 # Serializers define the API representation.
@@ -15,14 +16,19 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-"""
+
 
 # Routers provided an easy way of automatically determinig the URL conf.
-router = routers.DefaultRouter()
-router.register(r'post', views.PostListViewSet, basename='posts') 
+router = routers.SimpleRouter()
+router.register(r'post', views.PostListViewSet, basename='post') 
+"""
+
 app_name='posts'
 
 urlpatterns = [
     path('', views.PostListView.as_view()),
-    path('api', include(router.urls)),
+#    path('api', include(router.urls)),
+    path('api/posts/', views.PostListAPI),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
