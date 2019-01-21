@@ -9,6 +9,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from .serializers import PostSerializer
 
 class PostListView(ListView):
@@ -24,21 +25,18 @@ class PostListView(ListView):
         print(str(context['posts']))
         return context
 
-@api_view(['GET'])
-def PostListAPI(request):
+class PostListAPI(generics.ListCreateAPIView):
     """
     API endpoint that list post to be viewed.
     """
-    if request.method == 'GET':
-        post = Post.objects.all()
-        serializer = PostSerializer(post, many=True)
-        return Response(serializer.data)
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = (IsAdminUser,)
 
-    def get_queryset(request):
-        """
-        query post by distance
-        """
+
+    def get_queryset(self):
         # get user's location
-        user_location = get_user_ip(request)
+        user_location = get_user_ip(self.request)
         user_point = Point(user_location['lon'], user_location['lat'], srid=4326)
         return Post.objects.annotate(distance=Distance('location', user_point)).order_by('distance')
+

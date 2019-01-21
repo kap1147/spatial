@@ -28,7 +28,7 @@ app_name='posts'
 urlpatterns = [
     path('', views.PostListView.as_view()),
 #    path('api', include(router.urls)),
-    path('api/posts/', views.PostListAPI),
+    path('api/posts/', views.PostListAPI.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

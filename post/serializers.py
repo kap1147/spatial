@@ -1,10 +1,9 @@
 from .models import Post
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_framework import serializers
 
 # serializers define the API representation.
-class PostSerializer(GeoFeatureModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        geo_field = 'location'
-        fields = ('title', 'content', 'timestamp')
+        fields = ('title', 'content', 'timestamp','location')
 
