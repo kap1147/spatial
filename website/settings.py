@@ -38,9 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
 
     'rest_framework',
     'rest_framework_gis',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     'post',
 ]
@@ -80,6 +84,11 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 REST_FRAMEWORK = {
     # Use Django's standard 'django.contrib.auth' permissions,
